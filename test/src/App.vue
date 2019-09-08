@@ -1,10 +1,10 @@
 <template>
   <div id="app">
     <p>
-      <router-link to="/">机房</router-link>
-      <router-link to="/map">地图</router-link>  
+      <router-link to="/">机房123</router-link>
+      <router-link to="/map">地图</router-link>
       <router-link to="/robote">机器人</router-link>
-    </p> 
+    </p>
     <router-view/>
   </div>
 </template>

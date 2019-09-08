@@ -8,6 +8,7 @@ import THREEBSP from "../assets/js/libs/ThreeBSP";
 
 import doorRight from "../assets/images/door_right.png";
 import doorLeft from "../assets/images/door_left.png";
+import { Group } from 'three';
 class DrawHouse {
     /**
      * 构造方法初始化
@@ -90,6 +91,7 @@ class DrawHouse {
         }
 
         this.data = "";
+        this.initCabientObject = null;
     }
 
     init(data) {
@@ -124,6 +126,7 @@ class DrawHouse {
             this.createHouseWall();
         })
 
+        this.initCabient();
 
     };
 
@@ -511,6 +514,41 @@ class DrawHouse {
 
         });
         this.scene.add(wall);
+    };
+    initCabient() {
+        let _self = this;
+        // 用打组有个好处是我们不用管group中的Mesh的位置，我们只需要操控Group的位置
+        this.initCabientObject = new Group();
+        var Cabinet_material = new THREE.MeshPhongMaterial({
+            color: 0x42474c,
+        });
+        // 注意此处不能用之前初始化同来克隆的几何体，因为用来克隆的集合体的长宽高都为1，我们看到的都是放大的，而本体尺寸其实并没有改变，所以用几何体做减法的时候会被减没了
+        var Cabinet = _self.returnLambertObject(60, 200, 60, 0, Cabinet_material, 0, 0, 0);
+        var Cabinet_inside = _self.returnLambertObject(54, 196, 56, 0, Cabinet_material, 3, 0, 0);
+        this.initCabientObject.add(_self.returnResultBsp(Cabinet, Cabinet_inside, 2, 0)); // 这一步一个掏空的盒子已经出现了
+
+        // 画门
+        var doorgeometry = new THREE.BoxGeometry(55, 190, 2);
+        var door = new THREE.Mesh(doorgeometry, _self.DoorRenderingList);
+        door.position.set(30, 0, 0);
+        door.rotation.y = 0.5 * Math.PI; //-逆时针旋转,+顺时针
+        door.nature = "Cabinet__door";
+        door.isClose = 1;
+        this.initCabientObject.add(door);
+
+        // 以下三行代码仅做演示用
+        // this.initCabientObject.position.set(0, 100, 0);
+        // this.initCabientObject.rotation.y = 1 * Math.PI;
+        // this.scene.add(this.initCabientObject);
+    };
+    createCabient(result) {
+        let _self = this;
+        result.map((item) => {
+            let cabientMod = _self.initCabientObject.clone();
+            cabientMod.position.set(item.x - _self.houseWidth / 2, 100, item.z - _self.houseHeight / 2);
+            cabientMod.rotation.y = item.angle * Math.PI;
+            _self.scene.add(cabientMod);
+        })
     };
 };
 

@@ -22,6 +22,7 @@ export default {
     });
     this.drawHouse.init(this.data.house);
     this.drawHouse.createFloor();
+    this.drawHouse.createCabient(this.data.cabient);
   }
 }
 </script>
